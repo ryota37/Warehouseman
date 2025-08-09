@@ -1,18 +1,29 @@
 ﻿# include <Siv3D.hpp> // Siv3D v0.6.15
 
+Vec2 convertGrid2Coordinate(int gridX, int gridY, int cellSize)
+{
+	return Vec2(gridX * cellSize, gridY * cellSize);
+}
+
 class Player
 {
 public:
 	// Constructor
+	Player()
+		: m_circle(0, 0, 20), gridX(0), gridY(0)
+	{
+	}
 
 	void draw()
 	{
+		m_circle.x = convertGrid2Coordinate(gridX, gridY, 100).x;
+		m_circle.y = convertGrid2Coordinate(gridX, gridY, 100).y;
 		m_circle.draw(Palette::Red);
 	}
 
 	void update()
 	{
-
+		
 	}
 
 private:
