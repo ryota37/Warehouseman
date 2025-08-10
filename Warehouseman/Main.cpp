@@ -2,7 +2,7 @@
 
 Vec2 convertGrid2Coordinate(int gridX, int gridY, int cellSize)
 {
-	return Vec2(gridX * cellSize, gridY * cellSize);
+	return Vec2(gridX * cellSize + 50, gridY * cellSize + 50);
 }
 
 class Player
@@ -10,7 +10,7 @@ class Player
 public:
 	// Constructor
 	Player()
-		: m_circle(0, 0, 20), gridX(0), gridY(0)
+		: m_circle(50, 50, 20), gridX(0), gridY(0)
 	{
 	}
 
@@ -23,7 +23,10 @@ public:
 
 	void update()
 	{
-		
+		if(KeyUp.down()) gridY = std::max(0, gridY - 1);
+		if (KeyDown.down()) gridY = std::min(5, gridY + 1);
+		if (KeyLeft.down()) gridX = std::max(0, gridX - 1);
+		if (KeyRight.down()) gridX = std::min(7, gridX + 1);
 	}
 
 private:
