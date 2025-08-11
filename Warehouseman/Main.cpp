@@ -68,15 +68,29 @@ private:
 	int gridY;
 };
 
+struct CellState
+{
+	bool hasPlayer = false;
+	bool isWall = false;
+	bool isGoal = false;
+	bool hasBox = false;
+};
+
+
+void DrawCell(Grid<CellState> grid)
+{
+	for (int y = 0; y < grid.height(); ++y)
+	{
+		for (int x = 0; x < grid.width(); ++x)
+		{
+			RectF rect(Arg::center(convertGrid2Coordinate(x, y, 100)), 100, 100);
+			rect.draw(Palette::White).drawFrame(1,Palette::Black);
+		}
+	}
+}
+
 void Main()
 {
-	struct CellState
-	{
-		bool hasPlayer = false;
-		bool isWall = false;
-		bool isGoal = false;
-		bool hasBox = false;
-	};
 
 	Grid<CellState> grid(8, 6);
 	Player player;
@@ -90,6 +104,7 @@ void Main()
 		baggage.update();
 
 		// draw
+		DrawCell(grid);
 		player.draw();
 		wall.draw();
 		baggage.draw();
