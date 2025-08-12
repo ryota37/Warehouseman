@@ -5,6 +5,13 @@ Vec2 convertGrid2Coordinate(int gridX, int gridY, int cellSize)
 	return Vec2(gridX * cellSize + 50, gridY * cellSize + 50);
 }
 
+struct CellState
+{
+	bool isWall = false;
+	bool hasBox = false;
+	bool isGoal = false;
+};
+
 class Player
 {
 public:
@@ -21,6 +28,10 @@ public:
 		m_circle.draw(Palette::Red);
 	}
 
+	void CheckCollision(Grid<CellState>& grid)
+	{
+	}
+
 	void update()
 	{
 		if(KeyUp.down()) gridY = std::max(0, gridY - 1);
@@ -35,49 +46,24 @@ private:
 	int gridY;
 };
 
-class Wall
+
+void InitializeWall(Grid<CellState>& grid)
 {
-public:
-	// Constructor
+}
 
-	void draw()
-	{
-		m_rect.draw(Palette::Brown);
-	}
-
-private:
-	Rect m_rect;
-	int gridX;
-	int gridY;
-};
-
-class Baggage
+void InitializeBox(Grid<CellState>& grid)
 {
-public:
-	// Constructor
-	void draw()
-	{
-		m_rect.draw(Palette::Blue);
-	};
-	void update()
-	{
-	}
-private:
-	Rect m_rect;
-	int gridX;
-	int gridY;
-};
+	// Example: Place a box at (1, 1)
+	grid[1][1].hasBox = true;
+}
 
-struct CellState
+void InitializeGoal(Grid<CellState>& grid)
 {
-	bool hasPlayer = false;
-	bool isWall = false;
-	bool isGoal = false;
-	bool hasBox = false;
-};
+	// Example: Place a goal at (2, 2)
+	grid[2][2].isGoal = true;
+}
 
-
-void DrawCell(Grid<CellState> grid)
+void DrawCell(Grid<CellState>& grid)
 {
 	for (int y = 0; y < grid.height(); ++y)
 	{
@@ -89,25 +75,58 @@ void DrawCell(Grid<CellState> grid)
 	}
 }
 
+void DrawBox(Grid<CellState>& grid)
+{
+	for (int y = 0; y < grid.height(); ++y)
+	{
+		for (int x = 0; x < grid.width(); ++x)
+		{
+			if (grid[y][x].hasBox)
+			{
+				RectF rect(Arg::center(convertGrid2Coordinate(x, y, 100)), 100, 100);
+				rect.draw(Palette::Blue);
+			}
+		}
+	}
+}
+
+void DrawGoal(Grid<CellState>& grid)
+{
+	for (int y = 0; y < grid.height(); ++y)
+	{
+		for (int x = 0; x < grid.width(); ++x)
+		{
+			if (grid[y][x].isGoal)
+			{
+				RectF rect(Arg::center(convertGrid2Coordinate(x, y, 100)), 100, 100);
+				rect.draw(Palette::Green);
+			}
+		}
+	}
+}
+
 void Main()
 {
-
 	Grid<CellState> grid(8, 6);
 	Player player;
-	Wall wall;
-	Baggage baggage;
+
+	// Initialize grid with walls, boxes, and goals
+	InitializeBox(grid);
+	InitializeGoal(grid);
+	InitializeWall(grid);
 
 	while (System::Update())
 	{
 		// update
 		player.update();
-		baggage.update();
 
 		// draw
 		DrawCell(grid);
+		DrawBox(grid);
+		DrawGoal(grid);
 		player.draw();
-		wall.draw();
-		baggage.draw();
 
+		// Check for collisions
+		player.CheckCollision(grid);
 	}
 }
