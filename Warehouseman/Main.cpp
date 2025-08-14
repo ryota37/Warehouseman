@@ -32,6 +32,7 @@ public:
 	{
 	}
 
+	// TODO: Should stop player if the adjacent cell of box is a wall.
 	void update(Grid<CellState>& grid)
 	{
 		if (KeyUp.down())
@@ -178,6 +179,17 @@ void DrawWall(Grid<CellState>& grid)
 	}
 }
 
+void CheckGoal(Grid<CellState>& grid)
+{
+	for (int y = 0; y < grid.height(); ++y)
+	{
+		for (int x = 0; x < grid.width(); ++x)
+		{
+			if (grid[y][x].hasBox && grid[y][x].isGoal) Print << U"Goal Reached!";
+		}
+	}
+}
+
 void Main()
 {
 	Grid<CellState> grid(8, 6);
@@ -200,7 +212,9 @@ void Main()
 		DrawWall(grid);
 		player.draw();
 
-		// Check for collisions
+		// Check
 		player.CheckCollision(grid);
+		CheckGoal(grid);
+		CheckGoal(grid);
 	}
 }
