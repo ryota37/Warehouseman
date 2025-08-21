@@ -1,5 +1,13 @@
 ﻿# include <Siv3D.hpp> // Siv3D v0.6.16
 
+enum class Direction
+{
+	Up,
+	Down,
+	Left,
+	Right
+};
+
 Vec2 convertGrid2Coordinate(int gridX, int gridY, int cellSize)
 {
 	return Vec2(gridX * cellSize + 50, gridY * cellSize + 50);
@@ -32,61 +40,49 @@ public:
 	{
 	}
 
+	Point ConvertDirecton2Vector(Direction direction)
+	{
+		if (direction == Direction::Up)
+		{
+			return Point(0, -1);
+		}
+		else if (direction == Direction::Down)
+		{
+			return Point(0, 1);
+		}
+		else if (direction == Direction::Left)
+		{
+			return Point(-1, 0);
+		}
+		else if (direction == Direction::Right)
+		{
+			return Point(1, 0);
+		}
+	}
+
+	void UpdatePlayerAndBox(Grid<CellState>& grid, Direction direction)
+	{
+		Point moveVector = ConvertDirecton2Vector(direction);
+		if (grid[gridY + moveVector.y][gridX + moveVector.x].isWall)
+		{
+			return;
+		}
+		if (grid[gridY + moveVector.y][gridX + moveVector.x].hasBox)
+		{
+			grid[gridY + moveVector.y][gridX + moveVector.x].hasBox = false;
+			grid[gridY + moveVector.y * 2][gridX + moveVector.x * 2].hasBox = true;
+		}
+		gridX = std::clamp(gridX + moveVector.x, 0, 7);
+		gridY = std::clamp(gridY + moveVector.y, 0, 5);
+	}
+
 	// TODO: Should stop player if the adjacent cell of box is a wall.
 	void update(Grid<CellState>& grid)
 	{
-		if (KeyUp.down())
-		{
-			if (grid[gridY - 1][gridX].isWall)
-			{
-				return;
-			}
-			if (grid[gridY - 1][gridX].hasBox)
-			{
-				grid[gridY - 1][gridX].hasBox = false;
-				grid[gridY - 2][gridX].hasBox = true;
-			}
-			gridY = std::max(0, gridY - 1);
-		}
-		if (KeyDown.down())
-		{
-			if (grid[gridY + 1][gridX].isWall)
-			{
-				return;
-			}
-			if (grid[gridY + 1][gridX].hasBox)
-			{
-				grid[gridY + 1][gridX].hasBox = false;
-				grid[gridY + 2][gridX].hasBox = true;
-			}
-			gridY = std::min(5, gridY + 1);
-		}
-		if (KeyLeft.down())
-		{
-			if (grid[gridY][gridX - 1].isWall)
-			{
-				return;
-			}
-			if (grid[gridY][gridX - 1].hasBox)
-			{
-				grid[gridY][gridX - 1].hasBox = false;
-				grid[gridY][gridX - 2].hasBox = true;
-			}
-			gridX = std::max(0, gridX - 1);
-		}
-		if (KeyRight.down())
-		{
-			if (grid[gridY][gridX + 1].isWall)
-			{
-				return;
-			}
-			if (grid[gridY][gridX + 1].hasBox)
-			{
-				grid[gridY][gridX + 1].hasBox = false;
-				grid[gridY][gridX + 2].hasBox = true;
-			}
-			gridX = std::min(7, gridX + 1);
-		}
+		if (KeyUp.down()) UpdatePlayerAndBox(grid, Direction::Up);
+		if (KeyDown.down()) UpdatePlayerAndBox(grid, Direction::Down);
+		if (KeyLeft.down()) UpdatePlayerAndBox(grid, Direction::Left);
+		if (KeyRight.down()) UpdatePlayerAndBox(grid, Direction::Right);
 	}
 
 private:
@@ -98,16 +94,6 @@ private:
 
 void InitializeWall(Grid<CellState>& grid)
 {
-	//for (int x = 0; x < grid.width(); ++x)
-	//{
-	//	grid[0][x].isWall = true; // Top wall
-	//	grid[grid.height() - 1][x].isWall = true; // Bottom wall
-	//}
-	//for (int y = 0; y < grid.height(); ++y)
-	//{
-	//	grid[y][0].isWall = true; // Left wall
-	//	grid[y][grid.width() - 1].isWall = true; // Right wall
-	//}
 }
 
 void InitializeBox(Grid<CellState>& grid)
