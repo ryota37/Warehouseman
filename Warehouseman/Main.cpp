@@ -25,7 +25,7 @@ class Player
 public:
 	// Constructor
 	Player()
-		: m_circle(50, 50, 20), gridX(0), gridY(0)
+		: m_circle(50, 50, 20), gridX(1), gridY(1)
 	{
 	}
 
@@ -63,12 +63,10 @@ public:
 	void UpdatePlayerAndBox(Grid<CellState>& grid, Direction direction)
 	{
 		Point moveVector = ConvertDirecton2Vector(direction);
-		if (grid[gridY + moveVector.y][gridX + moveVector.x].isWall)
-		{
-			return;
-		}
+		if (grid[gridY + moveVector.y][gridX + moveVector.x].isWall) return;
 		if (grid[gridY + moveVector.y][gridX + moveVector.x].hasBox)
 		{
+			if (grid[gridY + moveVector.y * 2][gridX + moveVector.x * 2].isWall) return;
 			grid[gridY + moveVector.y][gridX + moveVector.x].hasBox = false;
 			grid[gridY + moveVector.y * 2][gridX + moveVector.x * 2].hasBox = true;
 		}
@@ -76,7 +74,6 @@ public:
 		gridY = std::clamp(gridY + moveVector.y, 0, 5);
 	}
 
-	// TODO: Should stop player if the adjacent cell of box is a wall.
 	void update(Grid<CellState>& grid)
 	{
 		if (KeyUp.down()) UpdatePlayerAndBox(grid, Direction::Up);
@@ -91,21 +88,31 @@ private:
 	int gridY;
 };
 
-
 void InitializeWall(Grid<CellState>& grid)
 {
+	// Example: Place walls around the grid
+	for (int x = 0; x < grid.width(); ++x)
+	{
+		grid[0][x].isWall = true;
+		grid[grid.height() - 1][x].isWall = true;
+	}
+	for (int y = 0; y < grid.height(); ++y)
+	{
+		grid[y][0].isWall = true;
+		grid[y][grid.width() - 1].isWall = true;
+	}
 }
 
 void InitializeBox(Grid<CellState>& grid)
 {
 	// Example: Place a box at (1, 1)
-	grid[1][1].hasBox = true;
+	grid[2][2].hasBox = true;
 }
 
 void InitializeGoal(Grid<CellState>& grid)
 {
 	// Example: Place a goal at (2, 2)
-	grid[2][2].isGoal = true;
+	grid[3][3].isGoal = true;
 }
 
 void DrawCell(Grid<CellState>& grid)
@@ -159,7 +166,7 @@ void DrawWall(Grid<CellState>& grid)
 			if (grid[y][x].isWall)
 			{
 				RectF rect(Arg::center(convertGrid2Coordinate(x, y, 100)), 100, 100);
-				rect.draw(Palette::Brown);
+				rect.draw(Palette::Sienna);
 			}
 		}
 	}
