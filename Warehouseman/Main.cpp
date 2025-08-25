@@ -23,7 +23,6 @@ struct CellState
 class Player
 {
 public:
-	// Constructor
 	Player()
 		: m_circle(50, 50, 20), gridX(1), gridY(1)
 	{
@@ -90,7 +89,6 @@ private:
 
 void InitializeWall(Grid<CellState>& grid)
 {
-	// Example: Place walls around the grid
 	for (int x = 0; x < grid.width(); ++x)
 	{
 		grid[0][x].isWall = true;
@@ -101,18 +99,20 @@ void InitializeWall(Grid<CellState>& grid)
 		grid[y][0].isWall = true;
 		grid[y][grid.width() - 1].isWall = true;
 	}
+	grid[3][4].isWall = true;
+	grid[3][2].isWall = true;
+	grid[1][6].isWall = true;
+	grid[3][5].isWall = true;
 }
 
 void InitializeBox(Grid<CellState>& grid)
 {
-	// Example: Place a box at (1, 1)
-	grid[2][2].hasBox = true;
+	grid[2][3].hasBox = true;
 }
 
 void InitializeGoal(Grid<CellState>& grid)
 {
-	// Example: Place a goal at (2, 2)
-	grid[3][3].isGoal = true;
+	grid[4][6].isGoal = true;
 }
 
 void DrawCell(Grid<CellState>& grid)
